@@ -15,7 +15,26 @@ export const addTodo = asyncHandler(async (req, res) => {
 
 // get all todos
 export const getAllTodos = asyncHandler(async (req, res) => {
-  const todos = await Todo.find();
+  const { search } = req.query;
+
+  const priorityOrder = {
+    High: 1,
+    Medium: 2,
+    Low: 3,
+  };
+
+  const searchQuery = {};
+
+  if (search) {
+    searchQuery.task = { $regex: search, $options: "i" };
+  }
+
+  const todos = await Todo.find(searchQuery).sort({
+    priorityOrder: 1,
+  });
+
+  todos.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
   res
     .status(200)
     .json(new ApiResponse(200, todos, "Todos fetched successfully"));
