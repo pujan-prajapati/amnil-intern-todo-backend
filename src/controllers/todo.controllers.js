@@ -29,9 +29,7 @@ export const getAllTodos = asyncHandler(async (req, res) => {
     searchQuery.task = { $regex: search, $options: "i" };
   }
 
-  const todos = await Todo.find(searchQuery).sort({
-    priorityOrder: 1,
-  });
+  const todos = await Todo.find(searchQuery);
 
   todos.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
